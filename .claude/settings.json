@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:platform.deepseek.com)",
+      "WebFetch(domain:www.assemblyai.com)",
+      "Bash(~/.nvm/versions/node/v24.13.0/bin/npm install:*)",
+      "Read(//Users/cdecoud/.nvm/versions/node/v24.13.0/lib/node_modules/npm/bin/**)",
+      "Bash(PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:$PATH\" npm install assemblyai)",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:$PATH\")",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:/usr/bin:/bin:$PATH\")"
+    ]
+  },
+  "enabledPlugins": {
+    "supabase@claude-plugins-official": true
+  }
+}
