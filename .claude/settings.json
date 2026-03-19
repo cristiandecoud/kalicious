@@ -15,7 +15,9 @@
       "Bash(ssh-add -l)",
       "mcp__vercel__list_teams",
       "mcp__vercel__list_projects",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "mcp__vercel__get_deployment_build_logs",
+      "mcp__vercel__get_deployment"
     ]
   },
   "enabledPlugins": {
