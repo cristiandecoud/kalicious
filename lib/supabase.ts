@@ -20,8 +20,11 @@ export type Database = {
         Row: RecipeRow;
         Insert: RecipeRow;
         Update: Partial<RecipeRow>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
   };
 };
 

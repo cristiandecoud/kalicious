@@ -1,5 +1,5 @@
 import { Recipe } from "./types";
-import { supabase, rowToRecipe, recipeToRow } from "./supabase";
+import { supabase, rowToRecipe, recipeToRow, RecipeRow } from "./supabase";
 
 export async function getRecipes(): Promise<Recipe[]> {
   const { data, error } = await supabase
@@ -8,7 +8,7 @@ export async function getRecipes(): Promise<Recipe[]> {
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map(rowToRecipe);
+  return ((data ?? []) as RecipeRow[]).map(rowToRecipe);
 }
 
 export async function saveRecipe(recipe: Recipe): Promise<void> {

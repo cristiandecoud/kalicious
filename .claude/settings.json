@@ -12,7 +12,10 @@
       "Bash(git remote:*)",
       "Bash(git push:*)",
       "Bash(ssh -T git@github.com)",
-      "Bash(ssh-add -l)"
+      "Bash(ssh-add -l)",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "Bash(npx tsc:*)"
     ]
   },
   "enabledPlugins": {
