@@ -7,7 +7,12 @@
       "Read(//Users/cdecoud/.nvm/versions/node/v24.13.0/lib/node_modules/npm/bin/**)",
       "Bash(PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:$PATH\" npm install assemblyai)",
       "Bash(export PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:$PATH\")",
-      "Bash(export PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:/usr/bin:/bin:$PATH\")"
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/v24.13.0/bin:/usr/bin:/bin:$PATH\")",
+      "mcp__github__create_repository",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(ssh-add -l)"
     ]
   },
   "enabledPlugins": {
