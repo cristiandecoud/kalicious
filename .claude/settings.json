@@ -17,7 +17,8 @@
       "mcp__vercel__list_projects",
       "Bash(npx tsc:*)",
       "mcp__vercel__get_deployment_build_logs",
-      "mcp__vercel__get_deployment"
+      "mcp__vercel__get_deployment",
+      "Read(//private/var/folders/g0/k7fdvnbn32nclpq4t1ytrd680000gn/T/**)"
     ]
   },
   "enabledPlugins": {

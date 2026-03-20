@@ -11,10 +11,23 @@ export async function getRecipes(): Promise<Recipe[]> {
   return ((data ?? []) as RecipeRow[]).map(rowToRecipe);
 }
 
-export async function saveRecipe(recipe: Recipe): Promise<void> {
+export async function createRecipe(recipe: Omit<Recipe, "id">): Promise<string> {
+  const { id: _, ...row } = recipeToRow({ ...recipe, id: "" });
+  const { data, error } = await supabase
+    .from("recipes")
+    .insert(row)
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data.id;
+}
+
+export async function updateRecipe(recipe: Recipe): Promise<void> {
   const { error } = await supabase
     .from("recipes")
-    .upsert(recipeToRow(recipe), { onConflict: "id" });
+    .update(recipeToRow(recipe))
+    .eq("id", recipe.id);
 
   if (error) throw new Error(error.message);
 }
@@ -26,8 +39,4 @@ export async function deleteRecipe(id: string): Promise<void> {
     .eq("id", id);
 
   if (error) throw new Error(error.message);
-}
-
-export function generateId(): string {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }

@@ -44,10 +44,15 @@ export async function POST(req: NextRequest) {
     }
 
     const provider = getProvider(providerName);
+    console.log(`[/api/llm] provider=${providerName} model=${DEFAULT_MODELS[providerName]} messages=${request.messages.length}`);
+
     const response = await provider.complete(request, {
       apiKey,
       model: DEFAULT_MODELS[providerName],
     });
+
+    console.log(`[/api/llm] response content length=${response.content?.length} tokens_in=${response.inputTokens} tokens_out=${response.outputTokens}`);
+    console.log(`[/api/llm] content preview: ${response.content?.slice(0, 200)}`);
 
     return NextResponse.json(response);
   } catch (err) {

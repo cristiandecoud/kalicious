@@ -3,7 +3,7 @@ import type { Recipe } from "@/lib/types";
 
 // Tipos para la tabla en Postgres
 export type RecipeRow = {
-  id: string;
+  id: string; // uuid en Postgres
   title: string;
   category: string;
   time: number;
@@ -18,7 +18,7 @@ export type Database = {
     Tables: {
       recipes: {
         Row: RecipeRow;
-        Insert: RecipeRow;
+        Insert: Omit<RecipeRow, "id"> & { id?: string };
         Update: Partial<RecipeRow>;
         Relationships: [];
       };

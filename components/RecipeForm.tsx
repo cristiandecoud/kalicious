@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Recipe, Category, CATEGORIES } from "@/lib/types";
-import { saveRecipe, generateId } from "@/lib/store";
+import { createRecipe, updateRecipe } from "@/lib/store";
 import { askLLM } from "@/lib/llm/service";
 import { DEFAULT_PROVIDER } from "@/lib/llm/registry";
 import {
@@ -33,6 +33,7 @@ export default function RecipeForm({ initial }: Props) {
   const [ingredientsText, setIngredientsText] = useState(initial?.ingredients?.join("\n") ?? "");
   const [steps, setSteps] = useState(initial?.steps ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
   const [transcript, setTranscript] = useState("");
   const [dictationStatus, setDictationStatus] = useState<DictationStatus>("idle");
@@ -137,11 +138,10 @@ export default function RecipeForm({ initial }: Props) {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!validate()) return;
-    const recipe: Recipe = {
-      id: initial?.id ?? generateId(),
+  async function handleSubmit() {
+    if (!validate() || saving) return;
+    setSaving(true);
+    const base = {
       title: title.trim(),
       category,
       time: Number(time),
@@ -150,13 +150,22 @@ export default function RecipeForm({ initial }: Props) {
       steps: steps.trim(),
       createdAt: initial?.createdAt ?? Date.now(),
     };
-    saveRecipe(recipe)
-      .then(() => router.push(`/recetas/${recipe.id}`))
-      .catch((err) => console.error("Error al guardar:", err));
+    try {
+      if (initial) {
+        await updateRecipe({ ...base, id: initial.id });
+        router.push(`/recetas/${initial.id}`);
+      } else {
+        const id = await createRecipe(base);
+        router.push(`/recetas/${id}`);
+      }
+    } catch (err) {
+      console.error("Error al guardar:", err);
+      setSaving(false);
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form action={handleSubmit} className="space-y-6">
 
       {/* Panel de re-dictado (opcional, secundario) */}
       <div
@@ -261,10 +270,11 @@ export default function RecipeForm({ initial }: Props) {
       <div className="flex flex-col gap-2 pt-2" style={{ borderTop: "1px solid #F0E9DC" }}>
         <button
           type="submit"
-          className="w-full font-sans font-semibold text-sm text-white rounded-full tracking-wide py-3.5 shadow-md"
+          disabled={saving}
+          className="w-full font-sans font-semibold text-sm text-white rounded-full tracking-wide py-3.5 shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ backgroundColor: "#C4502A" }}
         >
-          {initial ? "Guardar cambios" : "Guardar receta"}
+          {saving ? "Guardando…" : initial ? "Guardar cambios" : "Guardar receta"}
         </button>
         <button
           type="button"
