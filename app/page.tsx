@@ -7,9 +7,11 @@ import HomeMicRecorder from "@/components/HomeMicRecorder";
 import { Recipe } from "@/lib/types";
 import { getRecipes, deleteRecipe } from "@/lib/store";
 import { ParsedRecipe, PENDING_RECIPE_KEY } from "@/lib/recipeParser";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const router = useRouter();
+  const { user, signOut } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function Home() {
     <main className="crochet-bg page-enter px-5 pt-12 pb-24 flex flex-col items-center min-h-screen">
 
       {/* Logo */}
-      <div className="flex flex-col items-center mb-2">
+      <div className="w-full flex flex-col items-center mb-2 relative">
         <div className="rounded-full mb-3" style={{ width: 32, height: 3, backgroundColor: "#C4502A", opacity: 0.4 }} />
         <h1 className="font-heading font-bold tracking-tight" style={{ fontSize: 42, color: "#2C1810", lineHeight: 1 }}>
           Kalicious
@@ -41,6 +43,27 @@ export default function Home() {
         <p className="font-sans text-xs mt-2 uppercase tracking-[0.22em]" style={{ color: "#C9B99A" }}>
           Tu recetario personal
         </p>
+
+        {/* Auth button */}
+        <div className="absolute top-0 right-0">
+          {user ? (
+            <button
+              onClick={signOut}
+              className="font-sans text-[11px] px-3 py-1.5 rounded-full transition-opacity hover:opacity-70"
+              style={{ color: "#8B7355", border: "1px solid #E8DFD0", backgroundColor: "#F7F2EA" }}
+            >
+              Salir
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push("/auth")}
+              className="font-sans text-[11px] px-3 py-1.5 rounded-full transition-opacity hover:opacity-70"
+              style={{ color: "#8B7355", border: "1px solid #E8DFD0", backgroundColor: "#F7F2EA" }}
+            >
+              Iniciar sesión
+            </button>
+          )}
+        </div>
       </div>
 
       <HomeMicRecorder onProcessed={handleRecipeReady} />
