@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -40,9 +41,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/api/icons/192" />
       </head>
       <body className={`${playfair.variable} ${dmSans.variable} antialiased`}>
-        <div className="app-shell">
-          {children}
-        </div>
+        <AuthProvider>
+          <div className="app-shell">
+            {children}
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

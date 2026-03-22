@@ -31,7 +31,9 @@ export type Database = {
 const url  = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const key  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient<Database>(url, key);
+export const supabase = createClient<Database>(url, key, {
+  auth: { flowType: "implicit" },
+});
 
 // Mappers entre la fila de Postgres y el tipo Recipe de la app
 export function rowToRecipe(row: RecipeRow): Recipe {

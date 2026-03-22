@@ -37,13 +37,19 @@ body {
   background-position: 0 0, 9px 9px;
 }
 
-/* App shell — phone-width centering */
+/* App shell — phone-width en móvil, más ancho en desktop */
 .app-shell {
   max-width: 430px;
   width: 100%;
   min-height: 100svh;
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .app-shell {
+    max-width: 860px;
+  }
 }
 
 /* Mic button animations */
