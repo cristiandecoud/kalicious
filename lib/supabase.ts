@@ -15,6 +15,17 @@ export type RecipeRow = {
   is_public: boolean;
 };
 
+export type FavoriteRow = {
+  user_id: string;
+  recipe_id: string;
+};
+
+export type RatingRow = {
+  user_id: string;
+  recipe_id: string;
+  rating: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -22,6 +33,18 @@ export type Database = {
         Row: RecipeRow;
         Insert: Omit<RecipeRow, "id"> & { id?: string };
         Update: Partial<RecipeRow>;
+        Relationships: [];
+      };
+      recipe_favorites: {
+        Row: FavoriteRow;
+        Insert: FavoriteRow;
+        Update: Partial<FavoriteRow>;
+        Relationships: [];
+      };
+      recipe_ratings: {
+        Row: RatingRow;
+        Insert: RatingRow;
+        Update: Partial<RatingRow>;
         Relationships: [];
       };
     };
