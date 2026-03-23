@@ -11,6 +11,8 @@ export type RecipeRow = {
   ingredients: string[];
   steps: string;
   created_at: number;
+  user_id: string;
+  is_public: boolean;
 };
 
 export type Database = {
@@ -46,6 +48,8 @@ export function rowToRecipe(row: RecipeRow): Recipe {
     ingredients: row.ingredients,
     steps:       row.steps,
     createdAt:   row.created_at,
+    userId:      row.user_id,
+    isPublic:    row.is_public,
   };
 }
 
@@ -59,5 +63,7 @@ export function recipeToRow(recipe: Recipe): RecipeRow {
     ingredients: recipe.ingredients,
     steps:       recipe.steps,
     created_at:  recipe.createdAt,
+    user_id:     recipe.userId,
+    is_public:   recipe.isPublic,
   };
 }

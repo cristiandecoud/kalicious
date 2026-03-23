@@ -4,9 +4,9 @@ import RecipeForm from "@/components/RecipeForm";
 export default function NuevaReceta() {
   return (
     <div className="crochet-bg min-h-screen">
-      <nav style={{ backgroundColor: "#2C1810" }}>
+      <nav style={{ backgroundColor: "transparent", borderBottom: "1px solid #E8DFD0" }}>
         <div className="px-5 py-4">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-sans" style={{ color: "#C9A070" }}>
+          <Link href="/" className="inline-flex items-center gap-1.5 font-sans text-xs font-medium uppercase tracking-[0.18em]" style={{ color: "#B8A898" }}>
             <ArrowLeftIcon />
             <span>Kalicious</span>
           </Link>
@@ -33,8 +33,8 @@ export default function NuevaReceta() {
 
 function ArrowLeftIcon() {
   return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M15 19l-7-7 7-7" />
     </svg>
   );
 }

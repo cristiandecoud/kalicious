@@ -6,10 +6,12 @@ import Link from "next/link";
 import RecipeForm from "@/components/RecipeForm";
 import { Recipe } from "@/lib/types";
 import { getRecipes } from "@/lib/store";
+import { useAuth } from "@/context/AuthContext";
 
 export default function EditarReceta() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { user } = useAuth();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
 
   useEffect(() => {
@@ -17,10 +19,11 @@ export default function EditarReceta() {
       .then((all) => {
         const found = all.find((r) => r.id === id);
         if (!found) { router.push("/"); return; }
+        if (found.userId !== user?.id) { router.push(`/recetas/${id}`); return; }
         setRecipe(found);
       })
       .catch(console.error);
-  }, [id, router]);
+  }, [id, router, user]);
 
   if (!recipe) return null;
 

@@ -110,11 +110,16 @@ function CancelIcon() {
 
 function SpinnerIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9B99A" strokeWidth="2.5">
-      <path strokeLinecap="round" d="M12 2a10 10 0 010 20A10 10 0 0112 2" opacity=".3" />
-      <path strokeLinecap="round" d="M12 2a10 10 0 0110 10">
-        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9B99A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 7c0 1.2 1.5 1.2 1.5 2.4S8 11.6 8 12.8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0s" repeatCount="indefinite" />
       </path>
+      <path d="M14 7c0 1.2 1.5 1.2 1.5 2.4S14 11.6 14 12.8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
+      </path>
+      <path d="M4 15h16" />
+      <path d="M4 15c0 3.9 3.6 6 8 6s8-2.1 8-6" />
+      <path d="M7 21h10" />
     </svg>
   );
 }
