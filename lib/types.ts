@@ -9,6 +9,8 @@ export interface Recipe {
   ingredients: string[];
   steps: string;
   createdAt: number;
+  userId: string;
+  isPublic: boolean;
 }
 
 export const CATEGORIES: { value: Category; label: string }[] = [

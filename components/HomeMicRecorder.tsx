@@ -9,8 +9,8 @@ const STATE_LABEL: Record<string, string> = {
   idle:         "Grabá tu receta",
   recording:    "Grabando…",
   paused:       "Grabación pausada",
-  transcribing: "Transcribiendo…",
-  processing:   "Procesando con IA…",
+  transcribing: "Picando finito…",
+  processing:   "Cocinando a fuego lento…",
   error:        "Intentar de nuevo",
 };
 
@@ -105,11 +105,20 @@ function SendIcon() {
 
 function SpinnerIcon() {
   return (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-      <path strokeLinecap="round" d="M12 2a10 10 0 010 20A10 10 0 0112 2" opacity=".3" />
-      <path strokeLinecap="round" d="M12 2a10 10 0 0110 10">
-        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      {/* vapor izquierdo */}
+      <path d="M8 7c0 1.2 1.5 1.2 1.5 2.4S8 11.6 8 12.8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0s" repeatCount="indefinite" />
       </path>
+      {/* vapor derecho */}
+      <path d="M14 7c0 1.2 1.5 1.2 1.5 2.4S14 11.6 14 12.8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
+      </path>
+      {/* tazón */}
+      <path d="M4 15h16" />
+      <path d="M4 15c0 3.9 3.6 6 8 6s8-2.1 8-6" />
+      {/* base/plato */}
+      <path d="M7 21h10" />
     </svg>
   );
 }

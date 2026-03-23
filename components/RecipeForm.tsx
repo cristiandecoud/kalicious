@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Recipe, Category, CATEGORIES } from "@/lib/types";
 import { createRecipe, updateRecipe } from "@/lib/store";
+import { useAuth } from "@/context/AuthContext";
 import { askLLM } from "@/lib/llm/service";
 import { DEFAULT_PROVIDER } from "@/lib/llm/registry";
 import {
@@ -25,6 +26,7 @@ type DictationStatus = "idle" | "processing" | "done" | "error";
 
 export default function RecipeForm({ initial }: Props) {
   const router = useRouter();
+  const { user } = useAuth();
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [category, setCategory] = useState<Category>(initial?.category ?? "almuerzo");
@@ -32,6 +34,7 @@ export default function RecipeForm({ initial }: Props) {
   const [servings, setServings] = useState(initial?.servings?.toString() ?? "");
   const [ingredientsText, setIngredientsText] = useState(initial?.ingredients?.join("\n") ?? "");
   const [steps, setSteps] = useState(initial?.steps ?? "");
+  const [isPublic, setIsPublic] = useState(initial?.isPublic ?? false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
@@ -140,6 +143,7 @@ export default function RecipeForm({ initial }: Props) {
 
   async function handleSubmit() {
     if (!validate() || saving) return;
+    if (!user) { router.push("/auth"); return; }
     setSaving(true);
     const base = {
       title: title.trim(),
@@ -149,13 +153,15 @@ export default function RecipeForm({ initial }: Props) {
       ingredients: ingredientsText.split("\n").map((l) => l.trim()).filter(Boolean),
       steps: steps.trim(),
       createdAt: initial?.createdAt ?? Date.now(),
+      userId: initial?.userId ?? user.id,
+      isPublic,
     };
     try {
       if (initial) {
         await updateRecipe({ ...base, id: initial.id });
         router.push(`/recetas/${initial.id}`);
       } else {
-        const id = await createRecipe(base);
+        const id = await createRecipe(base, user.id);
         router.push(`/recetas/${id}`);
       }
     } catch (err) {
@@ -193,7 +199,7 @@ export default function RecipeForm({ initial }: Props) {
         {dictationStatus === "processing" && (
           <div className="controls-enter flex items-center gap-2">
             <SpinnerIcon />
-            <p className="text-xs font-sans" style={{ color: "#8B7355" }}>Procesando con IA…</p>
+            <p className="text-xs font-sans" style={{ color: "#8B7355" }}>Sazonando con IA…</p>
           </div>
         )}
         {dictationStatus === "done" && (
@@ -266,6 +272,37 @@ export default function RecipeForm({ initial }: Props) {
         />
       </Field>
 
+      {/* Visibilidad */}
+      <button
+        type="button"
+        onClick={() => setIsPublic((v) => !v)}
+        className="flex items-center gap-3 w-full rounded-xl px-4 py-3.5 text-left transition-colors"
+        style={{
+          border: `1px solid ${isPublic ? "#9BBD9B" : "#E8DFD0"}`,
+          backgroundColor: isPublic ? "#F2F8F2" : "#FDFAF7",
+        }}
+      >
+        <span
+          className="flex items-center justify-center rounded-full flex-shrink-0"
+          style={{
+            width: 36,
+            height: 36,
+            backgroundColor: isPublic ? "#6B8F6B" : "#E8DFD0",
+            transition: "background-color 0.2s",
+          }}
+        >
+          {isPublic ? <GlobeIcon /> : <LockIcon />}
+        </span>
+        <div>
+          <p className="text-xs font-sans font-semibold" style={{ color: isPublic ? "#4A6B4A" : "#8B7355" }}>
+            {isPublic ? "Receta pública" : "Receta privada"}
+          </p>
+          <p className="text-[11px] font-sans mt-0.5" style={{ color: "#C9B99A" }}>
+            {isPublic ? "Visible para todos los usuarios" : "Solo visible para vos"}
+          </p>
+        </div>
+      </button>
+
       {/* Acciones */}
       <div className="flex flex-col gap-2 pt-2" style={{ borderTop: "1px solid #F0E9DC" }}>
         <button
@@ -320,11 +357,16 @@ function Field({
 
 function SpinnerIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7355" strokeWidth="2.5">
-      <path strokeLinecap="round" d="M12 2a10 10 0 010 20A10 10 0 0112 2" opacity=".3" />
-      <path strokeLinecap="round" d="M12 2a10 10 0 0110 10">
-        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7355" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 7c0 1.2 1.5 1.2 1.5 2.4S8 11.6 8 12.8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0s" repeatCount="indefinite" />
       </path>
+      <path d="M14 7c0 1.2 1.5 1.2 1.5 2.4S14 11.6 14 12.8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
+      </path>
+      <path d="M4 15h16" />
+      <path d="M4 15c0 3.9 3.6 6 8 6s8-2.1 8-6" />
+      <path d="M7 21h10" />
     </svg>
   );
 }
@@ -333,6 +375,24 @@ function CheckIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B8F6B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 6L9 17l-5-5" />
+    </svg>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B7355" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
     </svg>
   );
 }
