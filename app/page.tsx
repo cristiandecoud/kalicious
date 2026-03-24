@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import HomeMicRecorder from "@/components/HomeMicRecorder";
 import RecipeList, { RecipeTab } from "@/components/RecipeList";
-import { Recipe } from "@/lib/types";
+import { RecipeListItem } from "@/lib/types";
 import {
-  getRecipesPage,
-  getFavoriteIds, toggleFavorite,
-  getAllRatings, getUserRatings, upsertRating,
+  toggleFavorite,
+  upsertRating,
 } from "@/lib/store";
 import { usePageSize } from "@/hooks/usePageSize";
 import { ParsedRecipe, PENDING_RECIPE_KEY } from "@/lib/recipeParser";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 export default function Home() {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef                     = useRef<HTMLDivElement>(null);
@@ -32,105 +32,120 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [userMenuOpen]);
 
-  const [recipes, setRecipes]         = useState<Recipe[]>([]);
-  const [total, setTotal]             = useState(0);
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  const [avgRatings, setAvgRatings]   = useState<Map<string, number>>(new Map());
-  const [userRatings, setUserRatings] = useState<Map<string, number>>(new Map());
-  const [tab, setTab]                 = useState<RecipeTab>("comunidad");
-  const [query, setQuery]             = useState("");
-  const [page, setPage]               = useState(1);
-  const pageSize                      = usePageSize();
-
-  // ── Resetear página al cambiar tab o búsqueda ─────────────────────────────
-
-  useEffect(() => { setPage(1); }, [tab, query]);
+  const [recipes, setRecipes]      = useState<RecipeListItem[]>([]);
+  const [total, setTotal]          = useState(0);
+  const [tab, setTab]               = useState<RecipeTab>("comunidad");
+  const [query, setQuery]           = useState("");
+  const [page, setPage]             = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const pageSize                    = usePageSize();
+  const effectiveTab                = user ? tab : "comunidad";
 
   // ── Carga de recetas (server-side, con debounce en búsqueda) ──────────────
 
   useEffect(() => {
-    const favIds = [...favoriteIds];
+    if (authLoading || !pageSize) return;
+    const controller = new AbortController();
     const t = setTimeout(() => {
-      getRecipesPage({ tab, userId: user?.id, favoriteIds: favIds, query, page, pageSize })
-        .then(({ recipes, total }) => { setRecipes(recipes); setTotal(total); })
-        .catch(console.error);
+      supabase.auth.getSession()
+        .then(async ({ data: { session } }) => {
+          const params = new URLSearchParams({
+            tab: effectiveTab,
+            page: String(page),
+            pageSize: String(pageSize),
+          });
+
+          if (query.trim()) params.set("query", query.trim());
+          if (user?.id) params.set("userId", user.id);
+
+          const res = await fetch(`/api/recipes?${params.toString()}`, {
+            headers: session?.access_token
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : undefined,
+            cache: "no-store",
+            signal: controller.signal,
+          });
+
+          if (!res.ok) {
+            const body = await res.json().catch(() => null);
+            throw new Error(body?.error ?? "No se pudo cargar el listado");
+          }
+
+          const data = await res.json() as { recipes: RecipeListItem[]; total: number };
+          setRecipes(data.recipes);
+          setTotal(data.total);
+        })
+        .catch((error) => {
+          if ((error as Error).name !== "AbortError") console.error(error);
+        });
     }, query ? 300 : 0);
-    return () => clearTimeout(t);
-  }, [tab, query, page, pageSize, user?.id, favoriteIds]);
-
-  // ── Carga de ratings ──────────────────────────────────────────────────────
-
-  const loadRatings = useCallback(async () => {
-    const rows = await getAllRatings();
-    const sums = new Map<string, { total: number; count: number }>();
-    for (const { recipe_id, rating } of rows) {
-      const cur = sums.get(recipe_id) ?? { total: 0, count: 0 };
-      sums.set(recipe_id, { total: cur.total + rating, count: cur.count + 1 });
-    }
-    const avgs = new Map<string, number>();
-    for (const [id, { total, count }] of sums) avgs.set(id, total / count);
-    setAvgRatings(avgs);
-  }, []);
-
-  useEffect(() => {
-    loadRatings().catch(console.error);
-  }, [loadRatings]);
-
-  // ── Datos del usuario ─────────────────────────────────────────────────────
-
-  useEffect(() => {
-    if (user) {
-      Promise.all([getFavoriteIds(user.id), getUserRatings(user.id)])
-        .then(([favs, ratings]) => { setFavoriteIds(favs); setUserRatings(ratings); })
-        .catch(console.error);
-      setTab("mis-recetas");
-    } else {
-      setFavoriteIds(new Set());
-      setUserRatings(new Map());
-      setTab("comunidad");
-    }
-  }, [user]);
+    return () => {
+      controller.abort();
+      clearTimeout(t);
+    };
+  }, [authLoading, effectiveTab, page, pageSize, query, refreshKey, user?.id]);
 
   // ── Acciones ──────────────────────────────────────────────────────────────
 
   async function handleToggleFavorite(recipeId: string) {
     if (!user) return;
-    const wasFav = favoriteIds.has(recipeId);
-    setFavoriteIds((prev) => {
-      const next = new Set(prev);
-      wasFav ? next.delete(recipeId) : next.add(recipeId);
-      return next;
-    });
+    const currentRecipe = recipes.find((recipe) => recipe.id === recipeId);
+    if (!currentRecipe) return;
+
+    const wasFav = currentRecipe.isFavorite;
+    setRecipes((prev) => prev.map((recipe) => (
+      recipe.id === recipeId
+        ? { ...recipe, isFavorite: !wasFav }
+        : recipe
+    )));
     try {
       await toggleFavorite(recipeId, user.id, wasFav);
+      setRefreshKey((value) => value + 1);
     } catch {
-      setFavoriteIds((prev) => {
-        const next = new Set(prev);
-        wasFav ? next.add(recipeId) : next.delete(recipeId);
-        return next;
-      });
+      setRecipes((prev) => prev.map((recipe) => (
+        recipe.id === recipeId
+          ? { ...recipe, isFavorite: wasFav }
+          : recipe
+      )));
     }
   }
 
   async function handleRate(recipeId: string, rating: number) {
     if (!user) return;
-    const prev = userRatings.get(recipeId) ?? 0;
-    setUserRatings((m) => new Map(m).set(recipeId, rating));
+    const currentRecipe = recipes.find((recipe) => recipe.id === recipeId);
+    if (!currentRecipe) return;
+
+    const prev = currentRecipe.userRating;
+    setRecipes((prevRecipes) => prevRecipes.map((recipe) => (
+      recipe.id === recipeId
+        ? { ...recipe, userRating: rating }
+        : recipe
+    )));
     try {
       await upsertRating(recipeId, user.id, rating);
-      loadRatings().catch(console.error);
+      setRefreshKey((value) => value + 1);
     } catch {
-      setUserRatings((m) => {
-        const next = new Map(m);
-        prev > 0 ? next.set(recipeId, prev) : next.delete(recipeId);
-        return next;
-      });
+      setRecipes((prevRecipes) => prevRecipes.map((recipe) => (
+        recipe.id === recipeId
+          ? { ...recipe, userRating: prev }
+          : recipe
+      )));
     }
   }
 
   function handleRecipeReady(parsed: ParsedRecipe) {
     sessionStorage.setItem(PENDING_RECIPE_KEY, JSON.stringify(parsed));
     router.push("/recetas/nueva");
+  }
+
+  function handleTabChange(nextTab: RecipeTab) {
+    setTab(nextTab);
+    setPage(1);
+  }
+
+  function handleQueryChange(nextQuery: string) {
+    setQuery(nextQuery);
+    setPage(1);
   }
 
   return (
@@ -200,15 +215,12 @@ export default function Home() {
           pageSize={pageSize}
           onPageChange={setPage}
           query={query}
-          onQueryChange={setQuery}
-          tab={tab}
-          onTabChange={setTab}
+          onQueryChange={handleQueryChange}
+          tab={effectiveTab}
+          onTabChange={handleTabChange}
           showUserTabs={!!user}
           userId={user?.id}
-          favoriteIds={favoriteIds}
           onToggleFavorite={handleToggleFavorite}
-          avgRatings={avgRatings}
-          userRatings={userRatings}
           onRate={handleRate}
         />
       </div>

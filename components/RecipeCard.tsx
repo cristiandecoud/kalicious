@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Recipe, CATEGORIES } from "@/lib/types";
+import { RecipeListItem, CATEGORIES } from "@/lib/types";
 
 interface Props {
-  recipe: Recipe;
+  recipe: RecipeListItem;
   isOwner: boolean;
-  isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
-  avgRating?: number;
-  userRating?: number;
   onRate?: (id: string, rating: number) => void;
   canInteract?: boolean;
 }
@@ -25,8 +22,8 @@ const CATEGORY_DOTS: Record<string, string> = {
 
 export default function RecipeCard({
   recipe, isOwner,
-  isFavorite = false, onToggleFavorite,
-  avgRating = 0, userRating = 0, onRate,
+  onToggleFavorite,
+  onRate,
   canInteract = false,
 }: Props) {
   const categoryLabel =
@@ -56,6 +53,7 @@ export default function RecipeCard({
       {/* Overlay link — cubre toda la tarjeta */}
       <Link
         href={`/recetas/${recipe.id}`}
+        prefetch={false}
         aria-label={recipe.title}
         style={{ position: "absolute", inset: 0, borderRadius: 16, zIndex: 0 }}
       />
@@ -86,8 +84,8 @@ export default function RecipeCard({
       {/* Rating de cupcakes */}
       <div className="mb-4" style={{ position: "relative", zIndex: 1 }}>
         <CupcakeRating
-          avgRating={avgRating}
-          userRating={userRating}
+          avgRating={recipe.avgRating}
+          userRating={recipe.userRating}
           canRate={canInteract}
           onRate={(r) => onRate?.(recipe.id, r)}
         />
@@ -106,22 +104,22 @@ export default function RecipeCard({
         {canInteract && (
           <button
             onClick={() => onToggleFavorite?.(recipe.id)}
-            title={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+            title={recipe.isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
             style={{
               background: "none",
               border: "none",
               padding: 4,
               cursor: "pointer",
-              color: isFavorite ? "#C4502A" : "#CFC3B4",
+              color: recipe.isFavorite ? "#C4502A" : "#CFC3B4",
               transition: "color 0.15s",
               outline: "none",
               display: "flex",
               alignItems: "center",
             }}
             onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = "#C4502A")}
-            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = isFavorite ? "#C4502A" : "#CFC3B4")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = recipe.isFavorite ? "#C4502A" : "#CFC3B4")}
           >
-            <HeartIcon filled={isFavorite} />
+            <HeartIcon filled={recipe.isFavorite} />
           </button>
         )}
       </div>
