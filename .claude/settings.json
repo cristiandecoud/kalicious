@@ -26,7 +26,9 @@
       "mcp__supabase__apply_migration",
       "Bash(grep -r 'use server' /Users/cdecoud/dev/personal/kalicious/app --include=*.tsx --include=*.ts)",
       "Bash(grep -n \"use server\" /Users/cdecoud/dev/personal/kalicious/lib/*.ts)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(grep -r \"serviceWorker\\\\|sw\\\\.js\\\\|serwist\\\\|next-pwa\\\\|workbox\" /Users/cdecoud/dev/personal/kalicious --include=\"*.{ts,tsx,js,json}\" --exclude-dir=node_modules -l)",
+      "Bash(node -e \":*)"
     ]
   },
   "enabledPlugins": {
