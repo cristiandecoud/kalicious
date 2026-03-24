@@ -163,6 +163,11 @@ select:focus-visible {
     padding-bottom: 0 !important;
   }
 
+  /* Evita página en blanco extra por min-height: 100vh */
+  .min-h-screen {
+    min-height: 0 !important;
+  }
+
   /* Header y footer solo visibles al imprimir */
   .print-header,
   .print-footer {
