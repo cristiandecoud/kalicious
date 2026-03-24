@@ -23,7 +23,10 @@
       "Bash(ls /Users/cdecoud/dev/personal/kalicious/app/recetas/[id])",
       "Bash(git config:*)",
       "Read(//Users/cdecoud/**)",
-      "mcp__supabase__apply_migration"
+      "mcp__supabase__apply_migration",
+      "Bash(grep -r 'use server' /Users/cdecoud/dev/personal/kalicious/app --include=*.tsx --include=*.ts)",
+      "Bash(grep -n \"use server\" /Users/cdecoud/dev/personal/kalicious/lib/*.ts)",
+      "Bash(npm run:*)"
     ]
   },
   "enabledPlugins": {

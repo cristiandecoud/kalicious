@@ -13,6 +13,12 @@ export interface Recipe {
   isPublic: boolean;
 }
 
+export interface RecipeListItem extends Recipe {
+  isFavorite: boolean;
+  avgRating: number;
+  userRating: number;
+}
+
 export const CATEGORIES: { value: Category; label: string }[] = [
   { value: "desayuno", label: "Desayuno" },
   { value: "almuerzo", label: "Almuerzo" },

@@ -1,7 +1,7 @@
 "use client";
 
 import RecipeCard from "@/components/RecipeCard";
-import { Recipe } from "@/lib/types";
+import { RecipeListItem } from "@/lib/types";
 
 export type RecipeTab = "comunidad" | "mis-recetas" | "favoritos";
 
@@ -12,7 +12,7 @@ const EMPTY_MESSAGES: Record<RecipeTab, string> = {
 };
 
 interface Props {
-  recipes: Recipe[];
+  recipes: RecipeListItem[];
   total: number;
   page: number;
   pageSize: number;
@@ -23,10 +23,7 @@ interface Props {
   onTabChange: (tab: RecipeTab) => void;
   showUserTabs: boolean;
   userId?: string;
-  favoriteIds: Set<string>;
   onToggleFavorite: (id: string) => void;
-  avgRatings: Map<string, number>;
-  userRatings: Map<string, number>;
   onRate: (id: string, rating: number) => void;
 }
 
@@ -34,8 +31,7 @@ export default function RecipeList({
   recipes, total, page, pageSize, onPageChange,
   query, onQueryChange,
   tab, onTabChange, showUserTabs,
-  userId, favoriteIds, onToggleFavorite,
-  avgRatings, userRatings, onRate,
+  userId, onToggleFavorite, onRate,
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -95,10 +91,7 @@ export default function RecipeList({
                 key={r.id}
                 recipe={r}
                 isOwner={r.userId === userId}
-                isFavorite={favoriteIds.has(r.id)}
                 onToggleFavorite={onToggleFavorite}
-                avgRating={avgRatings.get(r.id) ?? 0}
-                userRating={userRatings.get(r.id) ?? 0}
                 onRate={onRate}
                 canInteract={!!userId}
               />
