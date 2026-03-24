@@ -1,6 +1,48 @@
 import { Recipe } from "./types";
 import { supabase, rowToRecipe, recipeToRow, RecipeRow } from "./supabase";
 
+// ─── Paginado server-side ──────────────────────────────────────────────────────
+
+export type RecipesPageParams = {
+  tab: "comunidad" | "mis-recetas" | "favoritos";
+  userId?: string;
+  favoriteIds?: string[];
+  query?: string;
+  page: number;
+  pageSize: number;
+};
+
+export async function getRecipesPage(
+  params: RecipesPageParams
+): Promise<{ recipes: Recipe[]; total: number }> {
+  const { tab, userId, favoriteIds = [], query, page, pageSize } = params;
+  const from = (page - 1) * pageSize;
+  const to   = from + pageSize - 1;
+
+  // eslint-disable-next-line prefer-const
+  let q = supabase
+    .from("recipes")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (tab === "comunidad")   q = q.eq("is_public", true);
+  if (tab === "mis-recetas") q = q.eq("user_id", userId!);
+  if (tab === "favoritos")   q = favoriteIds.length
+    ? q.in("id", favoriteIds)
+    : q.in("id", ["__none__"]); // lista vacía sin romper la query
+
+  if (query?.trim()) q = q.ilike("title", `%${query.trim()}%`);
+
+  const { data, error, count } = await q;
+  if (error) throw new Error(error.message);
+
+  return {
+    recipes: ((data ?? []) as RecipeRow[]).map(rowToRecipe),
+    total: count ?? 0,
+  };
+}
+
 export async function getRecipes(): Promise<Recipe[]> {
   const { data, error } = await supabase
     .from("recipes")
