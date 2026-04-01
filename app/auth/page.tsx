@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { Field, inputClass } from "@/components/ui/Field";
 
 type Tab = "login" | "signup";
 type Notice = { type: "error" | "success"; text: string } | null;
@@ -165,20 +166,6 @@ export default function AuthPage() {
   );
 }
 
-function inputClass() {
-  return "w-full rounded-xl border border-[#E8DFD0] bg-[#FDFAF7] px-4 py-3 text-sm font-sans outline-none text-[#2C1810] placeholder-[#C9B99A] transition";
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-sans font-bold uppercase tracking-[0.2em]" style={{ color: "#8B7355" }}>
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
 
 function GoogleIcon() {
   return (

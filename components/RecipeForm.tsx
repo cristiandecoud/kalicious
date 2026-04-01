@@ -17,6 +17,8 @@ import {
   PENDING_RECIPE_KEY,
 } from "@/lib/recipeParser";
 import MicButton from "@/components/MicButton";
+import { SpinnerIcon, CheckIcon, GlobeIcon, LockIcon } from "@/components/icons";
+import { Field, inputClass } from "@/components/ui/Field";
 
 interface Props {
   initial?: Recipe;
@@ -326,73 +328,4 @@ export default function RecipeForm({ initial }: Props) {
   );
 }
 
-function inputClass(error?: string) {
-  const base = "w-full rounded-xl border px-4 py-3 text-sm font-sans transition outline-none";
-  const normal = "border-[#E8DFD0] bg-[#FDFAF7] text-[#2C1810] placeholder-[#C9B99A]";
-  const err = "border-red-300 bg-white text-[#2C1810] placeholder-[#C9B99A]";
-  return `${base} ${error ? err : normal}`;
-}
 
-function Field({
-  label, hint, error, action, children,
-}: {
-  label: string; hint?: string; error?: string; action?: React.ReactNode; children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex justify-between items-center">
-        <label className="text-[10px] font-sans font-bold uppercase tracking-[0.2em]" style={{ color: "#8B7355" }}>
-          {label}
-        </label>
-        <div className="flex items-center gap-3">
-          {hint && <span className="text-xs font-sans" style={{ color: "#C9B99A" }}>{hint}</span>}
-          {action}
-        </div>
-      </div>
-      {children}
-      {error && <p className="text-xs font-sans" style={{ color: "#EF4444" }}>{error}</p>}
-    </div>
-  );
-}
-
-function SpinnerIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7355" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 7c0 1.2 1.5 1.2 1.5 2.4S8 11.6 8 12.8">
-        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0s" repeatCount="indefinite" />
-      </path>
-      <path d="M14 7c0 1.2 1.5 1.2 1.5 2.4S14 11.6 14 12.8">
-        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
-      </path>
-      <path d="M4 15h16" />
-      <path d="M4 15c0 3.9 3.6 6 8 6s8-2.1 8-6" />
-      <path d="M7 21h10" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B8F6B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
-
-function GlobeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
-    </svg>
-  );
-}
-
-function LockIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B7355" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0110 0v4" />
-    </svg>
-  );
-}

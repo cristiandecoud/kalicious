@@ -5,8 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import RecipeForm from "@/components/RecipeForm";
 import { Recipe } from "@/lib/types";
-import { getRecipes } from "@/lib/store";
+import { getRecipeById } from "@/lib/store";
 import { useAuth } from "@/context/AuthContext";
+import { ArrowLeftIcon } from "@/components/icons";
 
 export default function EditarReceta() {
   const { id } = useParams<{ id: string }>();
@@ -15,9 +16,8 @@ export default function EditarReceta() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
 
   useEffect(() => {
-    getRecipes()
-      .then((all) => {
-        const found = all.find((r) => r.id === id);
+    getRecipeById(id)
+      .then((found) => {
         if (!found) { router.push("/"); return; }
         if (found.userId !== user?.id) { router.push(`/recetas/${id}`); return; }
         setRecipe(found);
@@ -60,10 +60,3 @@ export default function EditarReceta() {
   );
 }
 
-function ArrowLeftIcon() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M15 19l-7-7 7-7" />
-    </svg>
-  );
-}

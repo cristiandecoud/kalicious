@@ -1,6 +1,7 @@
 "use client";
 
 import { useRecorder } from "@/hooks/useRecorder";
+import { MicIcon, SpinnerIcon, PauseIcon, ResumeIcon, CancelIcon, StopIcon } from "@/components/icons";
 
 interface Props {
   onTranscript: (text: string) => void;
@@ -30,7 +31,7 @@ export default function MicButton({ onTranscript, disabled }: Props) {
             cursor: disabled || busy ? "not-allowed" : "pointer",
           }}
         >
-          {busy ? <SpinnerIcon /> : <MicIcon />}
+          {busy ? <SpinnerIcon stroke="#C9B99A" /> : <MicIcon />}
         </button>
         {rec.error && (
           <span className="text-xs font-sans" style={{ color: "#EF4444" }}>{rec.error}</span>
@@ -61,7 +62,7 @@ export default function MicButton({ onTranscript, disabled }: Props) {
           cursor: "pointer",
         }}
       >
-        {rec.state === "paused" ? <ResumeIcon /> : <PauseIcon />}
+        {rec.state === "paused" ? <ResumeIcon fill="#C4502A" /> : <PauseIcon />}
       </button>
       <button
         type="button"
@@ -81,45 +82,3 @@ export default function MicButton({ onTranscript, disabled }: Props) {
   );
 }
 
-function MicIcon() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="#8B7355" strokeWidth="1.8" viewBox="0 0 24 24">
-      <rect x="9" y="2" width="6" height="12" rx="3" />
-      <path strokeLinecap="round" d="M5 10a7 7 0 0014 0" />
-      <line x1="12" y1="19" x2="12" y2="22" strokeLinecap="round" />
-      <line x1="9" y1="22" x2="15" y2="22" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function StopIcon() {
-  return <svg width="10" height="10" fill="white" viewBox="0 0 10 10"><rect width="10" height="10" rx="1.5" /></svg>;
-}
-
-function PauseIcon() {
-  return <svg width="12" height="12" fill="#8B7355" viewBox="0 0 12 12"><rect x="2" y="1" width="3" height="10" rx="1" /><rect x="7" y="1" width="3" height="10" rx="1" /></svg>;
-}
-
-function ResumeIcon() {
-  return <svg width="12" height="12" fill="#C4502A" viewBox="0 0 12 12"><path d="M3 2l7 4-7 4V2z" /></svg>;
-}
-
-function CancelIcon() {
-  return <svg width="12" height="12" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" /><line x1="10" y1="2" x2="2" y2="10" /></svg>;
-}
-
-function SpinnerIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9B99A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 7c0 1.2 1.5 1.2 1.5 2.4S8 11.6 8 12.8">
-        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0s" repeatCount="indefinite" />
-      </path>
-      <path d="M14 7c0 1.2 1.5 1.2 1.5 2.4S14 11.6 14 12.8">
-        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
-      </path>
-      <path d="M4 15h16" />
-      <path d="M4 15c0 3.9 3.6 6 8 6s8-2.1 8-6" />
-      <path d="M7 21h10" />
-    </svg>
-  );
-}

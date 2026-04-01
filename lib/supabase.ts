@@ -2,6 +2,19 @@ import { createClient } from "@supabase/supabase-js";
 import type { Recipe } from "@/lib/types";
 
 // Tipos para la tabla en Postgres
+export type ProfileRow = {
+  id: string;
+  username: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  website: string | null;
+  bio: string | null;
+  is_public: boolean;
+  preferred_categories: string[];
+  created_at: string;
+  updated_at: string | null;
+};
+
 export type RecipeRow = {
   id: string; // uuid en Postgres
   title: string;
@@ -29,6 +42,12 @@ export type RatingRow = {
 export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: ProfileRow;
+        Insert: Omit<ProfileRow, "created_at"> & { created_at?: string };
+        Update: Partial<ProfileRow>;
+        Relationships: [];
+      };
       recipes: {
         Row: RecipeRow;
         Insert: Omit<RecipeRow, "id"> & { id?: string };

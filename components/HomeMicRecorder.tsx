@@ -4,6 +4,7 @@ import { useRecorder } from "@/hooks/useRecorder";
 import { askLLM } from "@/lib/llm/service";
 import { DEFAULT_PROVIDER } from "@/lib/llm/registry";
 import { RECIPE_SYSTEM_PROMPT, parseRecipeJSON, ParsedRecipe } from "@/lib/recipeParser";
+import { MicIcon, SpinnerIcon, SendIcon, PauseIcon, ResumeIcon, CancelIcon } from "@/components/icons";
 
 const STATE_LABEL: Record<string, string> = {
   idle:         "Grabá tu receta",
@@ -43,7 +44,7 @@ export default function HomeMicRecorder({ onProcessed }: Props) {
           transition: "background-color 0.2s", opacity: busy ? 0.75 : 1,
         }}
       >
-        {busy ? <SpinnerIcon /> : active ? <SendIcon /> : <MicIcon />}
+        {busy ? <SpinnerIcon size={38} stroke="white" /> : active ? <SendIcon /> : <MicIcon size={40} stroke="white" />}
       </button>
 
       <span className="font-sans font-semibold text-sm tracking-wide" style={{ color: "#8B7355" }}>
@@ -57,7 +58,7 @@ export default function HomeMicRecorder({ onProcessed }: Props) {
             className="flex items-center gap-1.5 font-sans text-xs rounded-full px-4 py-2"
             style={{ color: "#EF4444", border: "1px solid #FECACA", backgroundColor: "#FEF2F2", cursor: "pointer" }}
           >
-            <CancelIcon /> Cancelar
+            <CancelIcon size={11} stroke="currentColor" /> Cancelar
           </button>
           <button
             onClick={rec.state === "paused" ? rec.resume : rec.pause}
@@ -69,7 +70,7 @@ export default function HomeMicRecorder({ onProcessed }: Props) {
               cursor: "pointer",
             }}
           >
-            {rec.state === "paused" ? <ResumeIcon /> : <PauseIcon />}
+            {rec.state === "paused" ? <ResumeIcon fill="currentColor" /> : <PauseIcon fill="currentColor" />}
             {rec.state === "paused" ? "Reanudar" : "Pausar"}
           </button>
         </div>
@@ -84,53 +85,3 @@ export default function HomeMicRecorder({ onProcessed }: Props) {
   );
 }
 
-function MicIcon() {
-  return (
-    <svg width="40" height="40" fill="none" stroke="white" strokeWidth="1.7" viewBox="0 0 24 24">
-      <rect x="9" y="2" width="6" height="12" rx="3" />
-      <path strokeLinecap="round" d="M5 10a7 7 0 0014 0" />
-      <line x1="12" y1="19" x2="12" y2="22" strokeLinecap="round" />
-      <line x1="9" y1="22" x2="15" y2="22" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function SendIcon() {
-  return (
-    <svg width="34" height="34" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M12 19V5" /><path d="M5 12l7-7 7 7" />
-    </svg>
-  );
-}
-
-function SpinnerIcon() {
-  return (
-    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      {/* vapor izquierdo */}
-      <path d="M8 7c0 1.2 1.5 1.2 1.5 2.4S8 11.6 8 12.8">
-        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0s" repeatCount="indefinite" />
-      </path>
-      {/* vapor derecho */}
-      <path d="M14 7c0 1.2 1.5 1.2 1.5 2.4S14 11.6 14 12.8">
-        <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
-      </path>
-      {/* tazón */}
-      <path d="M4 15h16" />
-      <path d="M4 15c0 3.9 3.6 6 8 6s8-2.1 8-6" />
-      {/* base/plato */}
-      <path d="M7 21h10" />
-    </svg>
-  );
-}
-
-function PauseIcon() {
-  return <svg width="12" height="12" fill="currentColor" viewBox="0 0 12 12"><rect x="2" y="1" width="3" height="10" rx="1" /><rect x="7" y="1" width="3" height="10" rx="1" /></svg>;
-}
-
-function ResumeIcon() {
-  return <svg width="12" height="12" fill="currentColor" viewBox="0 0 12 12"><path d="M3 2l7 4-7 4V2z" /></svg>;
-}
-
-function CancelIcon() {
-  return <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" /><line x1="10" y1="2" x2="2" y2="10" /></svg>;
-}

@@ -3,31 +3,21 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Recipe, CATEGORIES } from "@/lib/types";
-import { getRecipes, deleteRecipe } from "@/lib/store";
+import { Recipe, CATEGORIES, CATEGORY_ACCENT_COLORS } from "@/lib/types";
+import { getRecipeById, deleteRecipe } from "@/lib/store";
 import { useAuth } from "@/context/AuthContext";
-
-const CATEGORY_ACCENTS: Record<string, string> = {
-  desayuno: "#D4863A",
-  almuerzo: "#6B8F6B",
-  cena:     "#4A6B8A",
-  postre:   "#C4628A",
-  snack:    "#8B6BAE",
-};
+import { ArrowLeftIcon, ClockIcon, UsersIcon, ListIcon, PrintIcon } from "@/components/icons";
 
 export default function RecipeDetail() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => { setOrigin(window.location.origin); }, []);
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   useEffect(() => {
-    getRecipes()
-      .then((all) => {
-        const found = all.find((r) => r.id === id);
+    getRecipeById(id)
+      .then((found) => {
         if (!found) { router.push("/"); return; }
         setRecipe(found);
       })
@@ -44,7 +34,7 @@ export default function RecipeDetail() {
 
   const isOwner = recipe.userId === user?.id;
   const categoryLabel = CATEGORIES.find((c) => c.value === recipe.category)?.label ?? recipe.category;
-  const accent = CATEGORY_ACCENTS[recipe.category] ?? "#C4502A";
+  const accent = CATEGORY_ACCENT_COLORS[recipe.category] ?? "#C4502A";
 
   return (
     <div className="crochet-bg page-enter min-h-screen">
@@ -172,28 +162,3 @@ function MetaStat({ icon, label, value }: { icon: React.ReactNode; label: string
   );
 }
 
-function ArrowLeftIcon() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M15 19l-7-7 7-7" />
-    </svg>
-  );
-}
-function ClockIcon() {
-  return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="1.5" /><path strokeLinecap="round" d="M12 6v6l4 2" strokeWidth="1.5" /></svg>;
-}
-function UsersIcon() {
-  return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" strokeWidth="1.5" /><path strokeLinecap="round" strokeWidth="1.5" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>;
-}
-function ListIcon() {
-  return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>;
-}
-function PrintIcon() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M6 9V2h12v7" />
-      <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
-      <rect x="6" y="14" width="12" height="8" rx="1" />
-    </svg>
-  );
-}

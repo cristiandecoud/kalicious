@@ -1,5 +1,6 @@
 import Link from "next/link";
 import RecipeForm from "@/components/RecipeForm";
+import { ArrowLeftIcon } from "@/components/icons";
 
 export default function NuevaReceta() {
   return (
@@ -31,10 +32,3 @@ export default function NuevaReceta() {
   );
 }
 
-function ArrowLeftIcon() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M15 19l-7-7 7-7" />
-    </svg>
-  );
-}

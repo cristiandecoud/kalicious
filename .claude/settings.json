@@ -29,7 +29,9 @@
       "Bash(npm run:*)",
       "Bash(grep -r \"serviceWorker\\\\|sw\\\\.js\\\\|serwist\\\\|next-pwa\\\\|workbox\" /Users/cdecoud/dev/personal/kalicious --include=\"*.{ts,tsx,js,json}\" --exclude-dir=node_modules -l)",
       "Bash(node -e \":*)",
-      "Bash(git -C /Users/cdecoud/dev/personal/kalicious log --all -- .env.local)"
+      "Bash(git -C /Users/cdecoud/dev/personal/kalicious log --all -- .env.local)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__execute_sql"
     ]
   },
   "enabledPlugins": {
