@@ -24,10 +24,7 @@ export const googleProvider: LLMProvider = {
         temperature,
       },
     };
-    console.log("[google] request →", JSON.stringify(payload, null, 2));
-
     const response = await ai.models.generateContent(payload);
-    console.log("[google] response →", JSON.stringify(response, null, 2));
 
     const text = response.text;
     if (!text) throw new Error("Google returned an empty response");

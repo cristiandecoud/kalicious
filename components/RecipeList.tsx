@@ -2,6 +2,7 @@
 
 import RecipeCard from "@/components/RecipeCard";
 import { RecipeListItem } from "@/lib/types";
+import { SearchIcon, CancelIcon } from "@/components/icons";
 
 export type RecipeTab = "comunidad" | "mis-recetas" | "favoritos";
 
@@ -69,7 +70,7 @@ export default function RecipeList({
         />
         {query && (
           <button onClick={() => onQueryChange("")} style={{ color: "#9B8268", lineHeight: 1, cursor: "pointer" }}>
-            <ClearIcon />
+            <CancelIcon stroke="currentColor" />
           </button>
         )}
       </div>
@@ -161,18 +162,3 @@ function PageButton({ onClick, disabled, active, children, title }: {
   );
 }
 
-function SearchIcon() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="#9B8268" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" />
-    </svg>
-  );
-}
-
-function ClearIcon() {
-  return (
-    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 12 12">
-      <line x1="2" y1="2" x2="10" y2="10" /><line x1="10" y1="2" x2="2" y2="10" />
-    </svg>
-  );
-}

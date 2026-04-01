@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { RecipeListItem, CATEGORIES } from "@/lib/types";
+import { RecipeListItem, CATEGORIES, CATEGORY_HEX_COLORS } from "@/lib/types";
+import { HeartIcon, CupcakeIcon } from "@/components/icons";
 
 interface Props {
   recipe: RecipeListItem;
@@ -12,14 +13,6 @@ interface Props {
   canInteract?: boolean;
 }
 
-const CATEGORY_DOTS: Record<string, string> = {
-  desayuno: "#E8C97A",
-  almuerzo: "#9BBD9B",
-  cena:     "#8AAEC4",
-  postre:   "#D4A0B5",
-  snack:    "#B5A3CC",
-};
-
 export default function RecipeCard({
   recipe, isOwner,
   onToggleFavorite,
@@ -28,7 +21,7 @@ export default function RecipeCard({
 }: Props) {
   const categoryLabel =
     CATEGORIES.find((c) => c.value === recipe.category)?.label ?? recipe.category;
-  const dot = CATEGORY_DOTS[recipe.category] ?? "#C4B49A";
+  const dot = CATEGORY_HEX_COLORS[recipe.category] ?? "#C4B49A";
 
   return (
     <div
@@ -170,33 +163,3 @@ function CupcakeRating({
   );
 }
 
-function CupcakeIcon({ active, faded }: { active: boolean; faded: boolean }) {
-  const fill   = active ? "#C4502A" : "none";
-  const stroke = active ? "#C4502A" : faded ? "#E8DFD0" : "#C9B99A";
-  const sw     = "1.1";
-
-  return (
-    <svg width="15" height="19" viewBox="0 0 13 17" fill="none">
-      <circle cx="6.5" cy="1.8" r="1.3" fill={fill} stroke={stroke} strokeWidth={sw} />
-      <path d="M6.5 3.1 Q7.5 4.5 6.5 5.5" stroke={stroke} strokeWidth={sw} strokeLinecap="round" fill="none" />
-      <path d="M1 9 C1 4 12 4 12 9 Z" fill={fill} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" />
-      {active && <path d="M3.5 7.5 Q5 5.5 7 6.5" stroke="white" strokeWidth="0.7" strokeLinecap="round" fill="none" opacity="0.4" />}
-      <path d="M1 9 L2 16 L11 16 L12 9 Z" fill={fill} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" />
-      {active && (
-        <>
-          <line x1="4.2" y1="9.5" x2="3.5" y2="15.5" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.25" />
-          <line x1="6.5" y1="9.2" x2="6.5" y2="15.8" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.25" />
-          <line x1="8.8" y1="9.5" x2="9.5" y2="15.5" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.25" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-function HeartIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-    </svg>
-  );
-}

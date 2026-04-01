@@ -84,6 +84,17 @@ export async function getRecipesPage(
   };
 }
 
+export async function getRecipeById(id: string): Promise<Recipe | null> {
+  const { data, error } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return null;
+  return rowToRecipe(data as RecipeRow);
+}
+
 export async function getRecipes(): Promise<Recipe[]> {
   const { data, error } = await supabase
     .from("recipes")
@@ -96,8 +107,8 @@ export async function getRecipes(): Promise<Recipe[]> {
 
 export async function createRecipe(recipe: Omit<Recipe, "id">, userId: string): Promise<string> {
   const recipeRow = recipeToRow({ ...recipe, id: "", userId, isPublic: recipe.isPublic ?? false });
-  const { id, ...row } = recipeRow;
-  void id;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id: _id, ...row } = recipeRow;
   const { data, error } = await supabase
     .from("recipes")
     .insert(row)

@@ -27,10 +27,21 @@ export const CATEGORIES: { value: Category; label: string }[] = [
   { value: "snack", label: "Snack" },
 ];
 
-export const CATEGORY_COLORS: Record<Category, string> = {
-  desayuno: "bg-yellow-100 text-yellow-800",
-  almuerzo: "bg-green-100 text-green-800",
-  cena: "bg-blue-100 text-blue-800",
-  postre: "bg-pink-100 text-pink-800",
-  snack: "bg-purple-100 text-purple-800",
+/** Colores para dots/badges en tarjetas y listas. */
+export const CATEGORY_HEX_COLORS: Record<Category, string> = {
+  desayuno: "#E8C97A",
+  almuerzo: "#9BBD9B",
+  cena:     "#8AAEC4",
+  postre:   "#D4A0B5",
+  snack:    "#B5A3CC",
 };
+
+/** Colores de acento para la página de detalle. */
+export const CATEGORY_ACCENT_COLORS: Record<Category, string> = {
+  desayuno: "#D4863A",
+  almuerzo: "#6B8F6B",
+  cena:     "#4A6B8A",
+  postre:   "#C4628A",
+  snack:    "#8B6BAE",
+};
+
